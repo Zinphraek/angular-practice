@@ -8,6 +8,10 @@ import { IProduct } from "./product";
 })
 export class ProductListComponent implements OnInit{
 
+  onRatingClicked(message: string): void {
+    this.pageTitle = 'Product List: ' + message;
+}
+
     pageTitle: string = 'Product List';
     imageWidth: number = 50;
     imageMargin: number = 2;
