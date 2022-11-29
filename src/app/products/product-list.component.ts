@@ -1,38 +1,43 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
 import { IProduct } from "./product";
 import { ProductService } from "./product.service";
 
 @Component({
-    selector: 'pm-products',
-    templateUrl: './product-list.component.html',
-    styleUrls: ['./product-list.component.css']
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
-
-  constructor(private productService: ProductService) {}
-  
-
-  pageTitle: string = 'Product List';
-  imageWidth: number = 50;
-  imageMargin: number = 2;
-  showImage: boolean = false;
-  errorMessage: string = '';
+  pageTitle = 'Product List';
+  imageWidth = 50;
+  imageMargin = 2;
+  showImage = false;
+  errorMessage = '';
   sub!: Subscription;
 
-  private _listFilter: string= '';
+  private _listFilter = '';
   get listFilter(): string {
-      return this._listFilter;
+    return this._listFilter;
   }
-
   set listFilter(value: string) {
-      this._listFilter = value;
-      console.log(this._listFilter)
-      this.filteredProducts = this.performFilter(value);
+    this._listFilter = value;
+    this.filteredProducts = this.performFilter(value);
   }
 
-  products: IProduct[] = [];
   filteredProducts: IProduct[] = [];
+  products: IProduct[] = [];
+
+  constructor(private productService: ProductService) {}
+
+  performFilter(filterBy: string): IProduct[] {
+    filterBy = filterBy.toLocaleLowerCase();
+    return this.products.filter((product: IProduct) =>
+      product.productName.toLocaleLowerCase().includes(filterBy));
+  }
+
+  toggleImage(): void {
+    this.showImage = !this.showImage;
+  }
 
   ngOnInit(): void {
     this.sub = this.productService.getProducts().subscribe({
@@ -48,18 +53,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
-  toggleImage(): void{
-  this.showImage = !this.showImage;
-  }
-
   onRatingClicked(message: string): void {
-      this.pageTitle = 'Product List: ' + message;
+    this.pageTitle = 'Product List: ' + message;
   }
-
-  performFilter(filterBy: string): IProduct[] {
-    filterBy = filterBy.toLocaleLowerCase();
-    return this.products.filter((product: IProduct) =>
-    product.productName.toLocaleLowerCase().includes(filterBy));
-  }
-    
 }
